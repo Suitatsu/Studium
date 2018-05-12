@@ -25,13 +25,15 @@ public:
 
 	TransformComponent(int sc)
 	{
-		position.Zero();
+		position.x = 400;
+		position.y = 320;
 		scale = sc;
 	}
-	TransformComponent(float x, float y) // Starting Position
+	TransformComponent(float x, float y, int sc) // Starting Position
 	{
-		position.Zero();
-
+		position.x = x;
+		position.y = y;
+		scale = sc;
 	}
 
 	TransformComponent(float x, float y, int h, int w, int sc)
