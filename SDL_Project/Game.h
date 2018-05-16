@@ -4,9 +4,6 @@
 #include <SDL_image.h>
 #include <vector>
 
-
-
-class AssetManager;
 class ColliderComponent;
 
 
@@ -14,7 +11,7 @@ class Game
 {
 private:
 	int cnt;
-	
+	bool isRunning;
 	SDL_Window *window;
 	
 
@@ -30,21 +27,9 @@ public:
 	void render();
 	void clean();
 
-	
+	static void AddTile(int id, int x, int y);
 	static SDL_Renderer *renderer;
 	static SDL_Event event;
-	static bool isRunning;
-	static SDL_Rect camera;
-	static AssetManager *assets;
-
-	enum groupLabels : std::size_t
-	{
-		groupMap,
-		groupPlayers,
-		groupEnemies,
-		groupColliders,
-		groupBomb
-	};
-
+	static std::vector<ColliderComponent*> colliders;
 };
 

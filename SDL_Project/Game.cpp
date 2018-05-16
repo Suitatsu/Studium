@@ -4,7 +4,6 @@
 #include "Components.h"
 #include "Vector2D.h"
 #include "Collision.h"
-#include "Assetmanager.h"
 
 Map* map;
 Manager manager;
@@ -12,14 +11,10 @@ Manager manager;
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 
-SDL_Rect Game::camera = { 0,0,800,640 };
-
-AssetManager* Game::assets = new AssetManager(&manager);
-
-bool Game::isRunning = false;
+std::vector<ColliderComponent*> Game::colliders;
 
 auto& player(manager.addEntity());
-
+auto& wall(manager.addEntity());
 
 
 
@@ -41,7 +36,7 @@ void Game::init(const char * title, int xpos, int ypos, int width, int height, b
 		{
 			flags = SDL_WINDOW_FULLSCREEN;
 		}
-		std::cout << "SDL_Init No Error: " << SDL_GetError() << std::endl;
+		std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
 		
 		window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
 		if (window)
@@ -58,29 +53,21 @@ void Game::init(const char * title, int xpos, int ypos, int width, int height, b
 
 		isRunning = true;
 	}
-	assets->AddTexture("terrain", "assets/terrain_ss.png");
-	assets->AddTexture("player", "assets/Animations.png");
-	assets->AddTexture("bomb", "assets/Apple.png");
+	
+	
+	map = new Map();
 
-	map = new Map("terrain", 2, 32);
+	Map::LoadMap("assets/p16x16.map", 16, 16);
 
-	map->LoadMap("assets/map.map", 25, 14);
-
-	player.addComponent<TransformComponent>(32 * 2, 32 * 2, 2);					// Givint Starting Position of Player
-	player.addComponent<SpriteComponent>("player", true);	// Giving animation Path of Player
+	player.addComponent<TransformComponent>(2);					// Givint Starting Position of Player
+	player.addComponent<SpriteComponent>("assets/Player.png");	// Giving Sprite Path of Player
 	player.addComponent<KeyboardController>();					// Add Keyboardmovement to Player
-	player.addComponent<ColliderComponent>("player");			// Add Collider to the Player and assign the Tag "player" 
-	player.addGroup(groupPlayers);
+	player.addComponent<ColliderComponent>("player");			// Add Collider to the Player and assign the Tag "player"
 
-
-
+	wall.addComponent<TransformComponent>(300.0f, 300.0f, 300, 20, 1);
+	wall.addComponent<SpriteComponent>("assets/Dirt.png");
+	wall.addComponent<ColliderComponent>("wall");
 }
-
-auto& tiles(manager.getGroup(Game::groupMap));
-auto& players(manager.getGroup(Game::groupPlayers));
-auto& enemies(manager.getGroup(Game::groupEnemies));
-auto& colliders(manager.getGroup(Game::groupColliders));
-auto& bomb(manager.getGroup(Game::groupBomb));
 
 void Game::handleEvents()
 {
@@ -99,57 +86,21 @@ void Game::handleEvents()
 
 void Game::update()
 {
-	SDL_Rect playerCol = player.getComponent<ColliderComponent>().collider;
-	Vector2D playerPos = player.getComponent<TransformComponent>().position;
-
+	
 	manager.refresh();
 	manager.update();
 
-	for (auto& c : colliders) // Check map collider with player collider
+	for (auto cc : colliders)
 	{
-		SDL_Rect cCol = c->getComponent<ColliderComponent>().collider;
-		if (Collision::AABB(cCol, playerCol))
-		{
-			player.getComponent<TransformComponent>().position = playerPos;
-		}
+		Collision::AABB(player.getComponent<ColliderComponent>(), *cc);
 	}
-
-	camera.x = player.getComponent<TransformComponent>().position.x - 400;
-	camera.y = player.getComponent<TransformComponent>().position.y - 320;
-
-	if (camera.x < 0)
-		camera.x = 0;
-	if (camera.y < 0)
-		camera.y = 0;
-	if (camera.x > camera.w)
-		camera.x = camera.w;
-	if (camera.y > camera.h)
-		camera.y = camera.h;
 }
-
-
-
 
 void Game::render()
 {
 	SDL_RenderClear(renderer);
-	for (auto& t : tiles)
-	{
-		t->draw();
-	}
 	
-	for (auto& p : players)
-	{
-		p->draw();
-	}
-	for (auto& e : enemies)
-	{
-		e->draw();
-	}
-	for (auto& b : bomb)
-	{
-		b->draw();
-	}
+	manager.draw();
 	SDL_RenderPresent(renderer);
 }
 
@@ -161,7 +112,12 @@ void Game::clean()
 	std::cout << "Game Cleaned" << std::endl;
 }
 
-
+void Game::AddTile(int id, int x, int y)
+{
+	auto& tile(manager.addEntity());
+	tile.addComponent<TileComponent>(x, y, 32, 32, id);
+	
+}
 
 
 
