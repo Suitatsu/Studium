@@ -41,11 +41,17 @@ public:
 		Animation walk_Side = Animation(1, 6, 100);
 		Animation walk_Front = Animation(2, 4, 100);
 		Animation walk_Back = Animation(3, 4, 100);
+		Animation idle_Side = Animation(4, 3, 200);
+		Animation idle_Back = Animation(5, 3, 200);
+		Animation eat_Cake = Animation(6, 8, 100);
 
 		animations.emplace("Idle", idle);
 		animations.emplace("Walk_Side", walk_Side);
 		animations.emplace("Walk_Front", walk_Front);
 		animations.emplace("Walk_Back", walk_Back);
+		animations.emplace("Idle_Side", idle_Side);
+		animations.emplace("Idle_Back", idle_Back);
+		animations.emplace("Eat_Cake", eat_Cake);
 
 		Play("Idle");
 		setTex(id);
@@ -99,4 +105,8 @@ public:
 		animIndex = animations[animName].index;
 		speed = animations[animName].speed;
 	 }
+	void PlayAnim(const char* animName)
+	{
+		this->Play(animName);
+	}
 };
