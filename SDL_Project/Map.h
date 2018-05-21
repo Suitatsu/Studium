@@ -16,7 +16,8 @@ public:
 	~Map();
 	void AddTile(int srcX, int srcY, int xpos, int ypos);
 	void LoadMap(std::string path, int sizeX, int sizeY);
-	
+
+	static int countAdjacentMines(int row, int col, char board[][25]);
 
 };
 

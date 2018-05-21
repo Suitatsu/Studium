@@ -4,21 +4,20 @@
 #include "Components.h"
 
 
-class BombComponent : public Component
+class CakeComponent : public Component
 {
 private:
 	TransformComponent * transform;
 
 
 public:
-	BombComponent() {}
-	~BombComponent() {}
+	CakeComponent() {}
+	~CakeComponent() {}
 
-	void init() override 
+	void init() override
 	{
 		transform = &entity->getComponent<TransformComponent>();
 	}
 	void update() override {}
 
 };
-

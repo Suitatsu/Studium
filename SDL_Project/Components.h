@@ -5,4 +5,6 @@
 #include "KeyboardController.h"
 #include "ColliderComponent.h"
 #include "TileComponent.h"
-#include "BombComponent.h"
+#include "CakeComponent.h"
+#include "UILabel.h"
+#include "Splashscreen.h"

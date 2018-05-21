@@ -7,10 +7,55 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+
 extern Manager manager;
 time_t t;
+int appleCheck;
 
 
+bool isApple(int row, int col, char board[][25])
+{
+	if (board[row][col] == '*')
+		return true;
+	else
+		return false;
+}
+
+
+
+int Map::countAdjacentMines(int row, int col, char board[][25]) // kommt noch
+{
+	int count = 0;
+	
+	// North
+	if (isApple(row - 1, col, board) == true)  
+		count++;
+	// South
+	if (isApple(row + 1, col, board) == true)
+		count++;
+	// East
+	if (isApple(row, col + 1, board) == true)
+		count++;
+	// West
+	if (isApple(row, col - 1, board) == true)
+		count++;
+	// North-East
+	if (isApple(row - 1, col + 1, board) == true)
+		count++;
+	// North-West
+	if (isApple(row - 1, col - 1, board) == true)
+		count++;
+	// South-East
+	if (isApple(row + 1, col + 1, board) == true)
+		count++;
+	// South-West
+	if (isApple(row + 1, col - 1, board) == true)
+		count++;
+
+
+	return (count);
+}
 
 Map::Map(std::string tID, int ms, int ts) : texID(tID), mapScale(ms), tileSize(ts)
 {
@@ -30,18 +75,21 @@ void Map::AddTile(int srcX, int srcY, int xpos, int ypos)
 	tile.addGroup(Game::groupMap);
 }
 
+
+
 void Map::LoadMap(std::string path, int sizeX, int sizeY)
 {
 	char c;
 	std::fstream mapFile;
 	mapFile.open(path);
+	int srcX, srcY;
+	
+	
 
 	
 
-	int srcX, srcY;
-
 	// Random Generator Variables
-	int appleCheck;
+	
 	srand((unsigned)time(&t));
 
 	for (int y = 0; y < sizeY; y++)
@@ -64,17 +112,7 @@ void Map::LoadMap(std::string path, int sizeX, int sizeY)
 	{
 		for (int x = 0; x < sizeX; x++)
 		{
-			if ((y != 0) && (y != sizeY -1) && (x != 0) && (x != sizeX -1) && (y != 1 || x != 1))
-				
-					{
-						int appleCheck = (rand() % 2);
-						if (appleCheck == 0)
-						{
-							Game::assets->CreateBomb(Vector2D(x * (scaledSize), y * (scaledSize)), "bomb");
-
-						}
-					}
-				
+			
 			mapFile.get(c);
 			if (c == '1')
 			{
@@ -82,11 +120,7 @@ void Map::LoadMap(std::string path, int sizeX, int sizeY)
 				tcol.addComponent<ColliderComponent>("terrain", x * scaledSize, y * scaledSize, scaledSize);
 				tcol.addGroup(Game::groupColliders); 
 				
-				
-				
-
 			}
-
 			mapFile.ignore();
 		}
 	}
